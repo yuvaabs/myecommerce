@@ -12,12 +12,10 @@ const secretkey: string = process.env.JWT_SECRET_KEY || '';
 export const authenticate = async (req:Request, res: Response, next: NextFunction) => {
 
   try{
-  const token: string | undefined = req.headers.authorization; // Extract the token from the "Authorization" header
+  const token: string | undefined = req.headers.authorization?.split(' ')[1]; // Extract the token from the "Authorization" header
    console.log(token)
    console.log('----------')
-   if(token){
-      return res.status(404).json({message:"token not found"})
-   }
+   
 
   if (!token) {
     console.log("No token provided")
@@ -26,9 +24,9 @@ export const authenticate = async (req:Request, res: Response, next: NextFunctio
   }
   
 
-  const data=jwt.verify(token, secretkey)
+  const data:any=jwt.verify(token, secretkey)
   console.log(data)
-  const verify:User | null=await model.usermodel.findOne({data,verify:true,role:'user'})
+  const verify:User | null=await model.usermodel.findOne({_id:data._id,verify:true,role:'user'})
 
   if(verify){
     
